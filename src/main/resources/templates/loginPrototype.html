@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" type="text/css" href="/static/main.css" th:href="@{/main.css}"/>
+</head>
+<body>
+<h1 class="login-title">Login to Your Account</h1>
+<div class="login-container">
+
+    <form id="login">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+
+        <label for="password">Password</label>
+        <input type="text" id="password" name="password">
+
+        <button type="button" onclick="submitLogin()">Login</button>
+    </form>
+    <p id="error-message" style="color: red;display: none;"></p>
+</div>
+
+<script>
+    function submitLogin(){
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
+
+    fetch("/api/auth/login", {
+        method:"Post",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({username:username,password:password })
+    })
+.then(response =>{
+    if(response.ok) {
+        window.location.href="/posts";
+    } else {
+        document.getElementById("error-message").textContent ="Invalid username or password";
+        document.getElementById("error-message").style.display="block";
+    }
+    })
+        .catch(error => {
+            console.error("Error during login:", error);
+            document.getElementById("error-message").textContent = "There was a problem with the login process";
+            document.getElementById("error-message").style.display  = "block";
+        });
+
+    }
+
+
+
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+/* Global styles for the entire application */
+body {
+    font-family: Arial, sans-serif; /* Sets a clean, readable font */
+    background-color: #f4f4f4; /* Light gray background for the whole page */
+    margin: 0; /* Removes default margin */
+    padding: 0; /* Removes default padding */
+}
+
+/* Styles for headings */
+h1, h2, h3 {
+    color: #333; /* Dark gray color for headings */
+}
+
+/* Styles for post containers */
+.post-container {
+    background-color: #fff; /* White background for each post */
+    margin: 20px auto; /* Centers the container with vertical spacing */
+    padding: 20px; /* Inner spacing */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 800px; /* Limits the container width */
+}
+
+/* Style for post titles inside containers */
+.post-container h2 {
+    margin-bottom: 10px; /* Space between title and content */
+    color: #333; /* Dark gray color for the title */
+}
+
+/* Style for paragraph text in posts */
+.post-container p {
+    margin-top: 10px; /* Space above paragraphs */
+    line-height: 1.5; /* Improves text readability */
+    color: #666; /* Medium gray for text */
+}
+
+/* General button styles */
+button {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+    border: none; /* Removes default border */
+    padding: 10px 20px; /* Space inside the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    border-radius: 5px; /* Rounded corners */
+    margin: 10px 0; /* Vertical spacing */
+}
+
+/* Button hover effect */
+button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Form label styling */
+form label {
+    display: block; /* Ensures labels are on their own line */
+    width: 100px; /* Fixed width for alignment */
+    margin-right: 10px; /* Space between label and input */
+}
+
+/* Styles for text inputs and textareas */
+input[type="text"], textarea {
+    display: block; /* Each input/textarea on a new line */
+    margin: 10px 0; /* Space above and below */
+    width: calc(100% - 120px); /* Adjusts width relative to container */
+    box-sizing: border-box; /* Includes padding and border in width calculation */
+    height: 40px; /* Fixed height */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Slightly rounded corners */
+}
+
+/* Specific styling for the content textarea */
+textarea#content {
+    padding-top: 13px; /* Extra space at the top inside the textarea */
+}
+
+/* Specific styling for the username input */
+input#username {
+    height: 25px; /* Slightly taller than default inputs */
+    width: 10%; /* Narrow width for the username field */
+}
+
+/* Specific styling for the password input */
+input#password {
+    width: 170px; /* Fixed width */
+    border: 1px solid #ccc; /* Light gray border */
+    border-radius: 4px; /* Rounded corners */
+    height: 23px; /* Fixed height */
+}
+
+/* Link styles */
+a {
+    color: #007BFF; /* Blue text */
+    text-decoration: none; /* Removes underline */
+}
+
+/* Link hover effect */
+a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Header styles */
+header {
+    background-color: #007BFF; /* Blue background */
+    color: white; /* White text */
+    padding: 15px 0; /* Vertical padding */
+    text-align: center; /* Centers text */
+}
+
+/* Styles for the main content container */
+.content-container {
+    padding: 20px; /* Inner spacing */
+    max-width: 1200px; /* Maximum width */
+    margin: auto; /* Centers container horizontally */
+}
+
+/* Form container margin */
+.content-container > form {
+    margin-bottom: 20px; /* Space below the form */
+}
+
+/* Styles for the login container */
+.login-container {
+    display: flex; /* Flexbox for centering */
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    height: 100vh; /* Full viewport height */
+}
+
+/* Styles for the login box */
+#login {
+    background-color: #fff; /* White background */
+    padding: 20px; /* Inner spacing */
+    border-radius: 5px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Title styling for the login form */
+.login-title {
+    text-align: center; /* Centers text */
+    margin-top: 50px; /* Space above the title */
+}
+
+/* Specific margin for buttons within post containers */
+.post-container button {
+    margin: 5px; /* Small margin around buttons */
+}

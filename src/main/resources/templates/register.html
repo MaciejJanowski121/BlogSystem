@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <!-- Link to the main CSS file for styling -->
+    <link rel="stylesheet" type="text/css" href="/static/main.css" th:href="@{/main.css}"/>
+</head>
+<body>
+<h2>Register</h2>
+
+<!-- Registration form -->
+<form id="register-form">
+    <!-- Input for username -->
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username">
+
+    <!-- Input for password -->
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password">
+
+    <!-- Button to trigger the registerUser function -->
+    <button type="button" onclick="registerUser()">Register</button>
+</form>
+
+<script>
+    /**
+     * Registers a new user by sending a POST request with the username and password.
+     */
+    function registerUser() {
+        // Retrieve input values
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        // Send POST request to the server to register the user
+        fetch("/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            // Include the username and password in the request body
+            body: JSON.stringify({ username: username, password: password })
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Alert user of successful registration and redirect to login page
+                    alert("User registered successfully");
+                    window.location.href = "/login";
+                } else {
+                    throw new Error("Registration failed");
+                }
+            })
+            .catch(error => {
+                // Handle errors during registration
+                console.error("Error registering user:", error);
+                alert("Error during registration");
+            });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Post</title>
+    <!-- Linking to the CSS file -->
+    <link rel="stylesheet" type="text/css" href="/static/main.css" th:href="@{/main.css}"/>
+</head>
+<body>
+<header>
+    <h1>Create a New Post</h1> <!-- Header for the page -->
+</header>
+
+<div class="content-container">
+
+    <!-- Form for creating a new post -->
+    <form id="create-post-form">
+        <label for="title">Post Title</label>
+        <!-- Input field for the post title -->
+        <input type="text" id="title" name="title" placeholder="Enter the post title">
+
+        <label for="content">Post Content</label>
+        <!-- Textarea for the post content -->
+        <textarea id="content" name="content" placeholder="Enter the content"></textarea>
+
+        <!-- Button to submit the form -->
+        <button type="button" id="submit-button">Create Post</button>
+    </form>
+
+    <!-- Success message, hidden by default -->
+    <div id="success-message" style="display:none;">
+        <p>Post created successfully!</p>
+    </div>
+
+    <!-- Button to navigate back to the posts -->
+    <a href="/posts"><button>Back to Posts</button></a>
+</div>
+
+<script>
+    // JavaScript to handle the form submission
+    document.getElementById("submit-button").addEventListener("click", function() {
+        const title = document.getElementById("title").value; // Get the title value
+        const content = document.getElementById("content").value; // Get the content value
+
+        // Send a POST request to create a new post
+        fetch("/api/posts/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ title: title, content: content }) // Convert data to JSON
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Parse JSON if response is ok
+                } else {
+                    throw new Error("Failed to create post."); // Throw error if response is not ok
+                }
+            })
+            .then(data => {
+                console.log("Post created:", data); // Log the created post data
+                document.getElementById("success-message").style.display = "block"; // Show success message
+            })
+            .catch(error => {
+                console.error("Error:", error); // Log any errors
+                alert("There was an error creating the post."); // Show alert if an error occurs
+            });
+    });
+</script>
+
+</body>
+</html>

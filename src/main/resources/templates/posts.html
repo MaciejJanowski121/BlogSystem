@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Posts</title>
+    <!-- Linking the main CSS file for styling -->
+    <link rel="stylesheet" type="text/css" href="/static/main.css" th:href="@{/main.css}"/>
+</head>
+<body>
+<header>
+    <!-- Page header with a title and a placeholder for the username -->
+    <h1>Blog Posts</h1>
+    <p id="username">Username:</p>
+</header>
+
+<div class="content-container">
+    <!-- Container to dynamically load posts -->
+    <div id="posts-container"></div>
+    <!-- Button to navigate to the create post page -->
+    <a href="/posts/create"><button>Add New Post</button></a>
+</div>
+
+<script>
+    /**
+     * Adds a comment to a specific post.
+     * @param {Event} event - The event object.
+     * @param {number} postId - The ID of the post to add a comment to.
+     */
+    async function addComment(event, postId) {
+        event.preventDefault(); // Prevents the default form submission behavior
+        const commentInput = event.target.elements.comment; // Get the input field for the comment
+
+        try {
+            // Send a POST request to add a new comment
+            const response = await fetch(`/api/posts/${postId}/comments/add`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ comment: commentInput.value }) // Send the comment content as JSON
+            });
+
+            if (response.ok) {
+                commentInput.value = '';  // Clear the input field
+                await fetchComments(postId);  // Refresh the comments for the post
+            } else {
+                alert('Failed to add comment');
+            }
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            alert('Error occurred while adding comment');
+        }
+    }
+
+    /**
+     * Fetches and displays comments for a specific post.
+     * @param {number} postId - The ID of the post.
+     */
+    async function fetchComments(postId) {
+        try {
+            // Fetch comments for the given post ID
+            const response = await fetch(`/api/posts/${postId}/comments`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch comments");
+            }
+            const comments = await response.json(); // Parse the response as JSON
+            const commentContainer = document.getElementById(`comment-container-${postId}`); // Get the container for comments
+            commentContainer.innerHTML = ''; // Clear the container
+
+            if (comments.length === 0) {
+                commentContainer.innerHTML = '<p>No comments yet</p>'; // Display message if no comments
+            } else {
+                comments.forEach(comment => {
+                    // Create elements for each comment
+                    const commentElement = document.createElement('div');
+                    commentElement.classList.add('comment');
+
+                    const authorElement = document.createElement('span');
+                    authorElement.textContent = comment.author + ": ";
+
+                    const contentElement = document.createElement('span');
+                    contentElement.textContent = comment.comment;
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = "Delete Comment";
+                    deleteButton.onclick = () => deleteComment(comment.id, postId);
+
+                    // Append the comment elements to the container
+                    commentElement.appendChild(authorElement);
+                    commentElement.appendChild(contentElement);
+                    commentElement.appendChild(deleteButton);
+                    commentContainer.appendChild(commentElement);
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching comments", error);
+            document.getElementById(`comment-container-${postId}`).innerHTML = '<p>Failed to load comments.</p>';
+        }
+    }
+
+    /**
+     * Fetches and displays the current username.
+     */
+    async function fetchUsername() {
+        try {
+            // Fetch the current username
+            const response = await fetch('/api/user');
+            const username = await response.text(); // Parse the response as text
+            document.getElementById('username').textContent = "Username: " + username; // Display the username
+        } catch (error) {
+            console.error("Error fetching username:", error);
+        }
+    }
+
+    // Fetch the username when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', fetchUsername);
+
+    /**
+     * Fetches and displays all posts.
+     */
+    async function fetchPosts() {
+        try {
+            // Fetch all posts
+            const response = await fetch('/api/posts');
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const posts = await response.json(); // Parse the response as JSON
+            const postsContainer = document.getElementById('posts-container');
+            postsContainer.innerHTML = ''; // Clear the container
+
+            if (posts.length === 0) {
+                postsContainer.innerHTML = '<p>No posts available</p>'; // Display message if no posts
+            } else {
+                posts.forEach(post => {
+                    // Create elements for each post
+                    const postElement = document.createElement('div');
+                    postElement.classList.add('post-container');
+
+                    const postTitle = document.createElement('h2');
+                    postTitle.textContent = "Title: " + post.title;
+
+                    const postContent = document.createElement('p');
+                    postContent.textContent = "Comment: " + post.content;
+
+                    // Create buttons for updating and deleting the post
+                    const updateButton = document.createElement('button');
+                    updateButton.textContent = 'Update';
+                    updateButton.onclick = () => submitUpdate(post.id);
+
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => deletePost(post.id);
+
+                    // Create container for comments
+                    const commentContainer = document.createElement('div');
+                    commentContainer.id = `comment-container-${post.id}`;
+
+                    // Create form for adding a comment
+                    const commentForm = document.createElement('form');
+                    commentForm.onsubmit = (event) => addComment(event, post.id);
+
+                    const commentInput = document.createElement('input');
+                    commentInput.type = 'text';
+                    commentInput.name = 'comment';
+                    commentInput.placeholder = 'Add a comment...';
+
+                    const submitButton = document.createElement('button');
+                    submitButton.type = 'submit';
+                    submitButton.textContent = 'Submit';
+
+                    // Append the elements to the post container
+                    commentForm.appendChild(commentInput);
+                    commentForm.appendChild(submitButton);
+                    postElement.appendChild(postTitle);
+                    postElement.appendChild(postContent);
+                    postElement.appendChild(updateButton);
+                    postElement.appendChild(deleteButton);
+                    postElement.appendChild(commentContainer);
+                    postElement.appendChild(commentForm);
+
+                    postsContainer.appendChild(postElement);
+
+                    // Fetch comments for the post
+                    fetchComments(post.id);
+                });
+            }
+        } catch (error) {
+            console.error("Error fetching posts:", error);
+            document.getElementById('posts-container').innerHTML = '<p>Failed to load posts.</p>';
+        }
+    }
+
+    /**
+     * Deletes a comment and refreshes the comments list.
+     * @param {number} commentId - The ID of the comment to delete.
+     * @param {number} postId - The ID of the post related to the comment.
+     */
+    async function deleteComment(commentId, postId) {
+        if (confirm("Are You sure you want do delete this comment")) {
+            try {
+                const response = await fetch(`/api/comment/${commentId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Comment deleted');
+                    await fetchComments(postId); // Refresh comments
+                } else {
+                    alert("Failed to delete comment");
+                }
+            } catch (error) {
+                console.error('Error deleting comment', error);
+                alert('Error occurred while deleting comment');
+            }
+        }
+    }
+
+    /**
+     * Deletes a post and its associated comments.
+     * @param {number} postId - The ID of the post to delete.
+     */
+    async function deletePost(postId) {
+        if (confirm("Are you sure you want to delete this post?")) {
+            try {
+                const response = await fetch(`/api/posts/${postId}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Post deleted successfully');
+                    await fetchPosts(); // Refresh the post list
+                } else {
+                    alert('Failed to delete post');
+                }
+            } catch (error) {
+                console.error('Error deleting post:', error);
+                alert('Error occurred while deleting post');
+            }
+        }
+    }
+
+    /**
+     * Submits an update for a post.
+     * @param {number} postId - The ID of the post to update.
+     */
+    async function submitUpdate(postId) {
+        const newTitle = document.getElementById(`title-${postId}`).value;
+        const newContent = document.getElementById(`content-${postId}`).value;
+
+        if (confirm("Are you sure you want to update this post?")) {
+            try {
+                const response = await fetch(`/api/posts/${postId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: newTitle,
+                        content: newContent
+                    })
+                });
+
+                if (response.ok) {
+                    alert('Post has been updated');
+                    await fetchPosts(); // Refresh the post list
+                } else {
+                    alert('Failed to update your post');
+                }
+            } catch (error) {
+                console.error('Error updating post:', error);
+                alert('Error occurred while updating post');
+            }
+        }
+    }
+
+    // Fetch all posts when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', fetchPosts);
+</script>
+</body>
+</html>
